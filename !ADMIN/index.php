@@ -127,6 +127,7 @@ if ($result) {
 
 <script src="dist/js/script.js"></script>
 <script src="dist/js/index.js"></script>
+<script src="dist/js/calendar.js"></script>
 
 <?php
 include('includes/footer.php');  // Ensure footer.php closes any open tags (if any)

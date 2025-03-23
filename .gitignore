@@ -1,7 +1,6 @@
 connection.php
 login.php
 PASys.sql
-backup/
 /!ADMIN/dist/js/checkAnnouncements.js
 /!ADMIN/dist/js/voice.js
 /!ADMIN/weather/config.php

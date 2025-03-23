@@ -475,11 +475,20 @@ h4 {
 }
 
 .date {
+    display: flex;
+    flex-direction: column; /* Stack elements vertically */
+    align-items: center;    /* Center them horizontally */
+    justify-content: center;
     padding: 10px;
-    text-align: center;
     cursor: pointer;
     transition: background-color 0.2s;
-}
+  }
+  
+  .date-icon {
+    margin-top: 4px; /* Some spacing between number and icon */
+    font-size: 1.2rem; /* Adjust icon size if you like */
+  }
+  
 
 .date:hover {
     background-color: rgba(0, 123, 255, 0.1);
