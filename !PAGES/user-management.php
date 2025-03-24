@@ -47,18 +47,40 @@ function fetchUsers($conn) {
 // Handle user deletion
 if (isset($_GET['delete_id'])) {
     $deleteId = $_GET['delete_id'];
+
+    // Check if the current logged in user is trying to delete their own account.
+    if (isset($_SESSION['user']) && $_SESSION['user']['id'] == $deleteId) {
+        echo "<script>
+                alert('This is your logged in account, you cannot delete it!');
+                window.location.href = 'user-management.php';
+              </script>";
+        exit();
+    }
+
     $deleteSql = "DELETE FROM users WHERE id = ?";
     $deleteStmt = mysqli_prepare($conn, $deleteSql);
     if ($deleteStmt) {
         mysqli_stmt_bind_param($deleteStmt, "i", $deleteId);
         if (mysqli_stmt_execute($deleteStmt)) {
-            $message = "User deleted successfully!";
+            echo "<script>
+                    alert('User deleted successfully!');
+                    window.location.href = 'user-management.php';
+                  </script>";
+            exit();
         } else {
-            $message = "Error deleting user: " . mysqli_error($conn);
+            echo "<script>
+                    alert('Error deleting user: " . mysqli_error($conn) . "');
+                    window.location.href = 'user-management.php';
+                  </script>";
+            exit();
         }
         mysqli_stmt_close($deleteStmt);
     } else {
-        $message = "Error preparing delete statement: " . mysqli_error($conn);
+        echo "<script>
+                alert('Error preparing delete statement: " . mysqli_error($conn) . "');
+                window.location.href = 'user-management.php';
+              </script>";
+        exit();
     }
 }
 

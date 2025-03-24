@@ -23,7 +23,7 @@ if (isset($_POST['submit'])) {
         if (mysqli_stmt_num_rows($checkStmt) > 0) {
             // Email already exists; alert user and refresh the page
             echo "<script>
-                    alert('Email already registered, please use different Email Address!');
+                    alert('Email already registered, please use a different Email Address!');
                     window.location.href = 'add-user.php';
                   </script>";
             exit();
@@ -82,7 +82,9 @@ if (isset($_POST['submit'])) {
                     <input type="text" id="lastName" name="lastName" class="form-input" required><br>
 
                     <label for="contact">Contact:</label>
-                    <input type="text" id="contact" name="contact" class="form-input" required><br>
+                    <!-- Updated contact field: exactly 11 digits required -->
+                    <input type="text" id="contact" name="contact" class="form-input" required 
+                           maxlength="11" pattern="\d{11}" title="Please enter exactly 11 digits"><br>
 
                     <label for="email">Email:</label>
                     <input type="email" id="email" name="email" class="form-input" required><br>

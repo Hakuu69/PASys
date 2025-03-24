@@ -32,6 +32,13 @@
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); 
 }
 
+.image-side img.fixed-size {
+    max-width: none; /* Remove the max-width constraint */
+    width: 150px;
+    height: 150px;
+}
+
+
 .form-side {
     flex: 1; 
     max-width: 450px; 
