@@ -51,15 +51,17 @@
     </a>
 </li>
 <li class="nav-items">
-    <a class="nav-link" href="javascript:void(0);" onclick="window.location.href='./pages/profile.html';">
+    <?php
+        // Include the connection if not already included in this scope.
+        include('./../connection.php');
+        $sql = "SELECT COUNT(*) AS count FROM notifications";
+        $result = mysqli_query($conn, $sql);
+        $row = mysqli_fetch_assoc($result);
+        $count = $row['count'];
+    ?>
+    <a class="nav-link" href="javascript:void(0);" onclick="window.location.href='notifications.php';">
         <i class="material-icons">notifications</i>
-        <span>notifications</span>
-    </a>
-</li>
-<li class="nav-items">
-    <a class="nav-link" href="javascript:void(0);" onclick="window.location.href='settings.php';">
-        <i class="material-icons">settings</i>
-        <span>Setting</span>
+        <span id="notif-count">Notifications<?php echo ($count > 0 ? " ($count)" : ""); ?></span>
     </a>
 </li>
 <li class="nav-items">
@@ -89,23 +91,30 @@
 
  
 
-    <!-- Footer -->
-    <footer class="footer">
+<!-- Footer -->
+<footer class="footer">
     <button class="footer-button" id="footerMenuButton">
         <i class="material-icons">menu</i> <!-- Menu icon -->
     </button>
-   
-    <button class="footer-button" id="footerNotificationsButton">
+
+    <button class="footer-button" id="footerNotificationsButton" onclick="window.location.href='notifications.php';">
         <i class="material-icons">notifications</i> <!-- Notification bell icon -->
+        <span id="footerNotificationCount" class="notification-badge"></span> 
     </button>
+
     <button class="footer-button" id="footerHomeButton" onclick="window.location.href='index.php';">
         <i class="material-icons">home</i> <!-- Home icon -->
     </button>
+
     <button class="footer-button" id="footerProfileButton" onclick="window.location.href='profile.php';">
         <i class="material-icons">person</i> <!-- Person icon -->
     </button>
-    <button class="footer-button" id="footerProfileButton" onclick="window.location.href='./../logout.php';">
-        <i class="material-icons">logout</i> <!-- Person icon -->
+
+    <button class="footer-button" id="footerLogoutButton" onclick="window.location.href='./../logout.php';">
+        <i class="material-icons">logout</i> <!-- Logout icon -->
     </button>
 </footer>
+
+<script src="dist/js/notifications.js"></script> <!-- real-time update for notification sidebar -->
+
 

@@ -12,6 +12,32 @@ if (isset($_POST['submit'])) {
     $password  = password_hash($_POST['password'], PASSWORD_BCRYPT); // Encrypt password
     $role      = $_POST['role'];
 
+    // First, check if the email is already registered
+    $emailCheckSql = "SELECT id FROM users WHERE email = ?";
+    $checkStmt = mysqli_prepare($conn, $emailCheckSql);
+    if ($checkStmt) {
+        mysqli_stmt_bind_param($checkStmt, "s", $email);
+        mysqli_stmt_execute($checkStmt);
+        mysqli_stmt_store_result($checkStmt);
+
+        if (mysqli_stmt_num_rows($checkStmt) > 0) {
+            // Email already exists; alert user and refresh the page
+            echo "<script>
+                    alert('Email already registered, please use different Email Address!');
+                    window.location.href = 'add-user.php';
+                  </script>";
+            exit();
+        }
+        mysqli_stmt_close($checkStmt);
+    } else {
+        // If there's an error preparing the statement, output an error alert
+        echo "<script>
+                alert('Error checking email: " . mysqli_error($conn) . "');
+                window.location.href = 'add-user.php';
+              </script>";
+        exit();
+    }
+
     // Prepare SQL query to insert user into the database using mysqli
     $sql = "INSERT INTO users (firstName, lastName, contact, email, password, role) VALUES (?, ?, ?, ?, ?, ?)";
     $stmt = mysqli_prepare($conn, $sql);
@@ -21,25 +47,27 @@ if (isset($_POST['submit'])) {
 
         // Execute the query and check if the user is added
         if (mysqli_stmt_execute($stmt)) {
-            $message = "User added successfully!";
+            echo "<script>
+                    alert('User added successfully!');
+                    window.location.href = 'add-user.php';
+                  </script>";
         } else {
-            $message = "Error adding user: " . mysqli_error($conn);
+            echo "<script>
+                    alert('Error adding user: " . mysqli_error($conn) . "');
+                    window.location.href = 'add-user.php';
+                  </script>";
         }
         mysqli_stmt_close($stmt);
     } else {
-        $message = "Error preparing statement: " . mysqli_error($conn);
+        echo "<script>
+                alert('Error preparing statement: " . mysqli_error($conn) . "');
+                window.location.href = 'add-user.php';
+              </script>";
     }
 }
 ?>
 
 <div id="main-content">
-    <?php
-    // Display success or error message
-    if (isset($message)) {
-        echo "<p class='alert-message'>$message</p>";
-    }
-    ?>
-
     <div class="container">
         <div class="half-container">
             <div class="image-side">

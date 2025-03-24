@@ -803,3 +803,93 @@ h1 {
     font-weight: bold; 
 }
 
+/* notifications */
+.notification-container {
+    width: 80%;
+    margin: 40px auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    background: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.notification-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.notification-container ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.notification-container li {
+    background: #e2e2e2;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+/* notifications.css */
+
+/* Container styling (kept as is from your setup) */
+.container-notification {
+    max-width: 800px; 
+    margin: 20px auto; 
+    padding: 20px;
+    background-color: #fff; 
+    border-radius: 8px; 
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Notification card styling */
+.card {
+    position: relative;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    
+    /* Center the card by giving it a max-width and auto margins */
+    max-width: 600px;        /* or whatever width you prefer */
+    margin: 0 auto 15px;     /* top/bottom margin: 0/15px, left/right: auto */
+    
+    /* Keep text left-aligned */
+    text-align: left;
+    padding: 15px;
+}
+
+
+/* Card body padding */
+.card-body {
+    padding-top: 0px; /* Ensures space if needed, adjust if necessary */
+}
+
+/* Card title and text */
+.card-title {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+.card-text {
+    margin: 0.5rem 0;
+}
+
+/* Plain "X" button styling */
+.close-btn {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: #000;
+    padding: 0;
+}
+.close-btn:hover {
+    color: red;
+}
+
+
+
+  

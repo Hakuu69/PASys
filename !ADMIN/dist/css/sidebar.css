@@ -11,6 +11,7 @@
     overflow-y: auto;
     border-radius: 0 20px 20px 0;
     transition: left 0.3s ease; /* Smooth transition */
+    z-index: 1;      /* a high number so the sidebar is above other elements */
    
 }
 
@@ -156,6 +157,7 @@
     align-items: center;
     box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
     padding: 0 20px; /* Add horizontal padding */
+    z-index: 2;      /* a high number so the sidebar is above other elements */
 }
 
 .footer-button {
@@ -164,6 +166,7 @@
     cursor: pointer;
     padding: 10px 15px; /* Adjust padding for better spacing */
     text-align: center; /* Center the icons */
+    position: relative; /* Position relative for the badge */
 }
 
 .footer-button .material-icons {
@@ -204,4 +207,32 @@
 .app .account-header,
 .app .nav-items {
     display: none; /* Hides the account header and its items */
+}
+
+/* Notification Bell Logo (sidebar.php) */
+.notification-badge {
+    background-color: red;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 50%;
+    padding: 3px 6px;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    display: none; /* Hidden by default */
+}
+
+.notification-badge {
+    position: absolute;  
+    top: -5px;          /* Adjust to move the badge up/down */
+    right: -5px;        /* Adjust to move the badge left/right */
+    background-color: red;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 50%;
+    padding: 3px 6px;
+    display: none;      /* Hidden by default if count = 0 */
+    z-index: 3;      /* Ensures it appears above other elements */
 }
