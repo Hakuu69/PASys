@@ -1,8 +1,9 @@
 connection.php
 login.php
 PASys.sql
-/!ADMIN/dist/js/checkAnnouncements.js
-/!ADMIN/dist/js/voice.js
-/!ADMIN/weather/config.php
-/!ADMIN/weather/forecast_processor.php
+/!PAGES/dist/js/checkAnnouncements.js
+/!PAGES/dist/js/voice.js
+/!PAGES/weather/config.php
+/!PAGES/weather/forecast_processor.php
 notes
+auth.php

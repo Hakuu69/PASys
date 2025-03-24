@@ -5,7 +5,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Admin</title>
+    <title>PA System</title>
+    <link rel="icon" href="./../ext/img/logos.png" type="image/png">
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOMVo7yW2yP9vOQKJ9EbszFzH54xKkFu1C77c4" crossorigin="anonymous"> -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -25,6 +26,8 @@
     
 
 </head>
+
+<?php include('./../auth.php'); ?>
 
 <body class="hold-transition sidebar-mini layout-fixed">
 <div class="wrapper">
