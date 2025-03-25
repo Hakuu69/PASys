@@ -25,6 +25,17 @@ if ($result) {
     $announcement_count = 0;
     echo "Error: " . mysqli_error($conn);
 }
+
+// Query to count pending announcements 
+$sql = "SELECT COUNT(*) AS pending_count FROM announcements WHERE status = 'pending'";
+$result = mysqli_query($conn, $sql);
+if ($result) {
+    $row = mysqli_fetch_assoc($result);
+    $pending_count = $row['pending_count'];
+} else {
+    $pending_count = 0;
+    echo "Error: " . mysqli_error($conn);
+}
 ?>
 
 <div id="main-content">
@@ -39,7 +50,7 @@ if ($result) {
                 $lastName = htmlspecialchars($_SESSION['user']['lastName'], ENT_QUOTES, 'UTF-8');
                 echo "$role $firstName $lastName";
             } else {
-                echo 'Admin User';
+                echo 'USER NOT LOGGED IN, PLEASE CONTACT THE DEVELOPER';
             }
             ?>!
         </h2>
@@ -62,13 +73,26 @@ if ($result) {
         <div class="w3-quarter">
             <div class="w3-container w3-blue">
                 <div class="w3-left">
-                    <i class="material-icons w3-icon">announcement</i> <!-- Announcement icon -->
+                    <i class="material-icons w3-icon">record_voice_over</i> <!-- Announcement icon -->
                 </div>
                 <div class="w3-right user-info">
                     <h3><?php echo $announcement_count; ?></h3> <!-- Display announcement count -->
                 </div>
                 <div class="w3-clear"></div>
                 <h4>Announcements</h4>
+            </div>
+        </div>
+
+        <div class="w3-quarter">
+            <div class="w3-container w3-red">
+                <div class="w3-left">
+                    <i class="material-icons w3-icon">announcement</i> <!-- Pending announcements icon -->
+                </div>
+                <div class="w3-right user-info">
+                    <h3><?php echo $pending_count; ?></h3> <!-- Display pending announcement count -->
+                </div>
+                <div class="w3-clear"></div>
+                <h4>Upcoming Announcements</h4>
             </div>
         </div>
 
@@ -82,19 +106,6 @@ if ($result) {
                 </div>
                 <div class="w3-clear"></div>
                 <h4>Developer Contact Num.</h4>
-            </div>
-        </div>
-
-        <div class="w3-quarter">
-            <div class="w3-container w3-red">
-                <div class="w3-left">
-                    <i class="material-icons w3-icon">history</i> <!-- History icon -->
-                </div>
-                <div class="w3-right user-info">
-                    <h3>52</h3> <!-- Placeholder for History Count -->
-                </div>
-                <div class="w3-clear"></div>
-                <h4>History</h4>
             </div>
         </div>
     </div>
@@ -120,7 +131,7 @@ if ($result) {
             <div class="days" id="days"></div>
         </div>
         <div class="map">
-            <iframe class="region3" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13586.064340004847!2d120.4479552764402!3d15.660168123993168!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3396b4927f0c4f6d%3A0xca63e6b21abcfe3a!2sTaguiporo%2C%20Tarlac!5e1!3m2!1sen!2sph!4v1729062082838!5m2!1sen!2sph"  allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            <iframe class="region3" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13586.064340004847!2d120.4479552764402!3d15.660168123993168!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3396b4927f0c4f6d%3A0xca63e6b21abcfe3a!2sTaguiporo%2C%20Tarlac!5e1!3m2!1sen!2sph!4v1729062082838!5m2!1sen!2sph" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
         </div>      
     </div>
 </div>

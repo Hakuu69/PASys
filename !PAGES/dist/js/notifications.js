@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", function() {
-    console.log("Notifications page loaded.");
 
     // Delete notification function to be used by the "X" button
     window.deleteNotification = function(notificationId) {
