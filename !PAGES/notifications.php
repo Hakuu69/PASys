@@ -2,24 +2,20 @@
 session_start();
 include('./../connection.php');
 
-// If this is an AJAX deletion request, process it and exit before any HTML is sent.
+// Process deletion request before any HTML is output.
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['notification_id'])) {
-    // (Optional) Check for authentication if needed:
-    if (!isset($_SESSION['user'])) {
-        echo "error";
-        exit;
-    }
     $notificationId = (int) $_POST['notification_id'];
     $query = "DELETE FROM notifications WHERE id = $notificationId";
     if (mysqli_query($conn, $query)) {
         echo "success";
     } else {
-        echo "error";
+        // For debugging purposes, you might want to see the MySQL error.
+        echo "error: " . mysqli_error($conn);
     }
     exit;
 }
 
-// For normal page requests, continue with your header and display the page.
+// Redirect to login if user is not authenticated.
 if (!isset($_SESSION['user'])) {
     header("Location: ../login.php");
     exit;
@@ -27,11 +23,23 @@ if (!isset($_SESSION['user'])) {
 
 include('includes/header.php');
 
-// Retrieve notifications along with user info (including role).
-$sql = "SELECT n.id AS notif_id, n.created_at, u.firstName, u.lastName, u.role
-        FROM notifications AS n
-        JOIN users AS u ON n.user_id = u.id
-        ORDER BY n.created_at DESC";
+// Determine which notifications to show based on user role.
+$user_role = $_SESSION['user']['role']; // Assumes 'role' is stored in the session.
+if ($user_role === 'Admin') {
+    // Admins see all notifications.
+    $sql = "SELECT n.id AS notif_id, n.created_at, u.firstName, u.lastName, u.role
+            FROM notifications AS n
+            JOIN users AS u ON n.user_id = u.id
+            ORDER BY n.created_at DESC";
+} else {
+    // Kapitan and Kagawad do not see notifications from Admins.
+    $sql = "SELECT n.id AS notif_id, n.created_at, u.firstName, u.lastName, u.role
+            FROM notifications AS n
+            JOIN users AS u ON n.user_id = u.id
+            WHERE u.role != 'Admin'
+            ORDER BY n.created_at DESC";
+}
+
 $result = mysqli_query($conn, $sql);
 ?>
 
@@ -40,7 +48,7 @@ $result = mysqli_query($conn, $sql);
     <?php if (mysqli_num_rows($result) > 0): ?>
         <?php while ($row = mysqli_fetch_assoc($result)): ?>
             <div id="notification-card-<?php echo $row['notif_id']; ?>" class="card mb-3">
-                <!-- Plain "X" button positioned at top right -->
+                <!-- Plain "X" button positioned at top right for deletion -->
                 <button 
                     type="button" 
                     class="close-btn" 
@@ -65,7 +73,4 @@ $result = mysqli_query($conn, $sql);
 </div>
 
 <script src="dist/js/script.js"></script>
-<script src="dist/js/notifications.js"></script>
-<?php
-include('includes/footer.php');
-?>
+<?php include('includes/footer.php'); ?>
