@@ -46,12 +46,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if ($announce_type === 'now') {
                 // For "Announce Now," output inline JavaScript that waits a bit,
                 // then uses the SpeechSynthesis API to speak the message and shows the alert.
-                    echo "<script>
+                echo "<script>
                     setTimeout(function(){
-                        var utterance = new SpeechSynthesisUtterance(\"" . addslashes($message_text) . "\");
+                        var utterance = new SpeechSynthesisUtterance(" . json_encode($message_text) . ");
                         var voices = window.speechSynthesis.getVoices();
                         var selectedVoice = voices.find(function(voice) {
-                            return voice.name === \"" . addslashes($voice) . "\";
+                            return voice.name === " . json_encode($voice) . ";
                         });
                         if(selectedVoice) {
                             utterance.voice = selectedVoice;
@@ -63,7 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         // Set flag to indicate this is an Announce Now announcement
                         window.announceNowRedirect = true;
                         // Show the modal pop-up
-                        showAnnouncementModal(\"📢 Announcement: " . addslashes($message_text) . "\");
+                        showAnnouncementModal(" . json_encode($message_text) . ");
                     }, 500);
                 </script>";
             } else {

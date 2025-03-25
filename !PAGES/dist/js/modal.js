@@ -1,9 +1,12 @@
-function showAnnouncementModal(message) {
-    var modal = document.getElementById("announcementModal");
-    var modalText = document.getElementById("modalAnnouncementText");
-    modalText.textContent = message;
-    modal.style.display = "block";
-  }
+function showAnnouncementModal(message, title = "📢 Announcement 📢") {
+  var modal = document.getElementById("announcementModal");
+  var modalTitle = document.getElementById("modalAnnouncementTitle");
+  var modalText = document.getElementById("modalAnnouncementText");
+
+  modalTitle.textContent = title; // Set the title
+  modalText.textContent = message; // Set the message
+  modal.style.display = "block";
+}
   
   function hideAnnouncementModal() {
     var modal = document.getElementById("announcementModal");

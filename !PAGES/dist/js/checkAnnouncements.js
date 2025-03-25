@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             speakMessage(announcement.message, announcement.voice);
 
                             setTimeout(() => {
-                                showAnnouncementModal(`📢 Announcement: ${announcement.message}`);
+                                showAnnouncementModal(`${announcement.message}`);
                             }, 100);
                         }
                     });
@@ -86,11 +86,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function checkWeatherAlert() {
         if (testMode) {
-            const simulatedData = "Forecasted maximum wind speed in the next 24 hours: 80 km/h.<br>Alert: Tropical Cyclone Wind Signal No. 2";
+            const simulatedData = "THIS IS JUST A TEST:<br> Forecasted maximum wind speed in the next 24 hours: 80 km/h.<br>Alert: Tropical Cyclone Wind Signal No. 2";
             console.log("Test mode enabled. Simulated weather alert data:", simulatedData);
             showWeatherModal(simulatedData);
             // Read the weather alert aloud using your existing speakMessage function.
-            speakMessage("Forecasted maximum wind speed in the next 24 hours: 80 km/h. Alert: Tropical Cyclone Wind Signal No. 2", "Default Weather Voice");
+            speakMessage("THIS IS JUST A TEST: Forecasted maximum wind speed in the next 24 hours: 80 km/h. Alert: Tropical Cyclone Wind Signal No. 2", "Default Weather Voice");
             return;
         }
         
@@ -159,9 +159,11 @@ document.addEventListener("DOMContentLoaded", function() {
 function showWeatherModal(message) {
     var modal = document.getElementById("weatherModal");
     var modalText = document.getElementById("modalWeatherText");
+
     modalText.innerHTML = message;
     modal.style.display = "block";
 }
+
 
 function hideWeatherModal() {
     var modal = document.getElementById("weatherModal");
