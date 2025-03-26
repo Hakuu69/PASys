@@ -30,6 +30,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // For announce later, ensure announce_at is provided
         $announce_at = mysqli_real_escape_string($conn, $_POST['announce_at']);
         $status = 'pending';
+
+        // Check if an announcement already exists at the same time
+        $check_query = "SELECT id FROM announcements WHERE announce_at = ?";
+        $check_stmt = mysqli_prepare($conn, $check_query);
+        mysqli_stmt_bind_param($check_stmt, "s", $announce_at);
+        mysqli_stmt_execute($check_stmt);
+        mysqli_stmt_store_result($check_stmt);
+                
+        if (mysqli_stmt_num_rows($check_stmt) > 0) {
+        echo "<script>alert('An announcement is already scheduled for this time. Please choose a different time.');</script>";
+        echo "<script>window.history.back();</script>"; // Go back without refreshing
+        exit;
+        }
+        mysqli_stmt_close($check_stmt);
     } else {
         // For announce now, use current time and mark as completed.
         $announce_at = date("Y-m-d H:i:s");
