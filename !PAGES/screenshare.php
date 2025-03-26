@@ -33,6 +33,7 @@
 
     <?php include('includes/footer.php'); ?>
     <script src="./dist/js/checkAnnouncements.js"></script>
+    <script src="dist/js/modal.js"></script>
 
 </body>
 </html>

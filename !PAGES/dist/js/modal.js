@@ -7,7 +7,7 @@ function showAnnouncementModal(message, title = "📢 Announcement 📢") {
   // Force update the time when the modal is shown
   var now = new Date();
   var formattedTime = now.toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
-  modalTime.textContent = formattedTime; // Update time
+  modalTime.textContent = "🕒 " + formattedTime; // Update time
 
   modalTitle.textContent = title; // Set the title
   modalText.innerHTML = message; // Use innerHTML to allow <br> to render properly
