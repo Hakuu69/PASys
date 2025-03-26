@@ -16,6 +16,12 @@ $userRole = isset($_SESSION['role']) ? $_SESSION['role'] : 'guest';
         <ul>
             <!-- Common Links -->
             <li class="nav-item">
+                <a class="nav-link" href="javascript:void(0);" onclick="window.open('screenshare.php', '_blank');">
+                    <i class="material-icons">tv</i>
+                    <span>Screenshare</span>
+                </a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" href="javascript:void(0);" onclick="window.location.href='index.php';">
                     <i class="material-icons">receipt_long</i>
                     <span>Dashboard</span>
