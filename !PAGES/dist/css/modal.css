@@ -52,3 +52,10 @@
   margin-bottom: 10px;
 }
 
+.modal-time {
+  font-size: 14px;
+  color: #555;
+  position: absolute;
+  top: 10px;
+  left: 15px;
+}

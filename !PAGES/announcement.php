@@ -44,28 +44,51 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         mysqli_stmt_bind_param($stmt, "sssssssss", $firstName, $lastName, $contact, $role, $message_text, $language, $voice, $announce_at, $status);
         if (mysqli_stmt_execute($stmt)) {
             if ($announce_type === 'now') {
-                // For "Announce Now," output inline JavaScript that waits a bit,
-                // then uses the SpeechSynthesis API to speak the message and shows the alert.
-                echo "<script>
-                    setTimeout(function(){
-                        var utterance = new SpeechSynthesisUtterance(" . json_encode($message_text) . ");
-                        var voices = window.speechSynthesis.getVoices();
-                        var selectedVoice = voices.find(function(voice) {
-                            return voice.name === " . json_encode($voice) . ";
-                        });
-                        if(selectedVoice) {
-                            utterance.voice = selectedVoice;
-                            console.log('✅ Using voice:', selectedVoice.name, '(', selectedVoice.lang, ')');
-                        } else {
-                            console.warn('⚠️ Selected voice not found, using default.');
-                        }
-                        window.speechSynthesis.speak(utterance);
-                        // Set flag to indicate this is an Announce Now announcement
-                        window.announceNowRedirect = true;
-                        // Show the modal pop-up
-                        showAnnouncementModal(" . json_encode($message_text) . ");
-                    }, 500);
-                </script>";
+                // Prepare the raw message for TTS: replace literal \r\n, \r, and \n with a space.
+            $rawMessageTextForTTS = str_replace(array("\\r\\n", "\\r", "\\n"), " ", $message_text);
+
+            // Prepare the formatted message for display: replace literal \r\n, \r, and \n with <br> tags.
+            $formattedMessageTextForModal = str_replace(array("\\r\\n", "\\r", "\\n"), "<br>", $message_text);
+
+            echo '<script>
+            setTimeout(function(){
+                var rawMessageText = ' . json_encode($rawMessageTextForTTS) . ';
+                var formattedMessageText = ' . json_encode($formattedMessageTextForModal) . ';
+                var now = new Date();
+                var formattedTime = now.toLocaleTimeString("en-US", { 
+                    hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: true 
+                });
+                var utterance = new SpeechSynthesisUtterance(rawMessageText);
+                var voices = window.speechSynthesis.getVoices();
+                var selectedVoice = voices.find(function(voice) {
+                    return voice.name === ' . json_encode($voice) . ';
+                });
+        
+                if (selectedVoice) {
+                    utterance.voice = selectedVoice;
+                    console.log("✅ Using voice:", selectedVoice.name, "(", selectedVoice.lang, ")");
+                } else {
+                    console.warn("⚠️ Selected voice not found, using default.");
+                }
+        
+                window.speechSynthesis.speak(utterance);
+                window.announceNowRedirect = true;
+        
+                // ✅ Call showAnnouncementModal with time
+                showAnnouncementModal(formattedMessageText, formattedTime);
+        
+                // ✅ Manually update the modal time in case the function fails
+                setTimeout(() => {
+                    let modalTimeElement = document.getElementById("modalAnnouncementTime");
+                    if (modalTimeElement) {
+                        modalTimeElement.textContent = "🕒 " + formattedTime;
+                        console.log("✅ Manually updated modal time: ", formattedTime);
+                    } else {
+                        console.error("🚨 Failed to update modal time, element not found!");
+                    }
+                }, 1);
+            }, 500);
+        </script>';
             } else {
                 echo "<script>alert('Announcement scheduled successfully!'); window.location.href='announcement.php';</script>";
             }

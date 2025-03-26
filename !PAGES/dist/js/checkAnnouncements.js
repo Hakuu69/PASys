@@ -24,10 +24,28 @@ document.addEventListener('DOMContentLoaded', function () {
                         if (!announcedMessages.has(announcement.id)) {
                             announcedMessages.add(announcement.id);
                             console.log("🔊 Announcing:", announcement.message, "with voice:", announcement.voice);
-                            speakMessage(announcement.message, announcement.voice);
-
+                            
+                            // Process the message:
+                            // For TTS: Replace both literal escape sequences and actual newline characters with a space.
+                            var rawMessageText = announcement.message
+                                .replace(/\\r\\n/g, ' ')
+                                .replace(/\\r/g, ' ')
+                                .replace(/\\n/g, ' ')
+                                .replace(/(\r\n|\r|\n)/g, ' ');
+                            
+                            // For modal display: Replace both literal escape sequences and actual newlines with <br> tags.
+                            var formattedMessageText = announcement.message
+                                .replace(/\\r\\n/g, '<br>')
+                                .replace(/\\r/g, '<br>')
+                                .replace(/\\n/g, '<br>')
+                                .replace(/(\r\n|\r|\n)/g, '<br>');
+                            
+                            // Use the raw text for TTS.
+                            speakMessage(rawMessageText, announcement.voice);
+                            
                             setTimeout(() => {
-                                showAnnouncementModal(`${announcement.message}`);
+                                // Display the announcement using the formatted text.
+                                showAnnouncementModal(`${formattedMessageText}`);
                             }, 100);
                         }
                     });
@@ -93,6 +111,18 @@ document.addEventListener('DOMContentLoaded', function () {
             speakMessage("THIS IS JUST A TEST: Forecasted maximum wind speed in the next 24 hours: 80 km/h. Alert: Tropical Cyclone Wind Signal No. 2", "Default Weather Voice");
             return;
         }
+
+        function checkWeatherAlert(weatherMessage) {
+            var now = new Date();
+            var formattedTime = now.toLocaleTimeString("en-US", { 
+                hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: true 
+            });
+        
+            console.log("⏰Calling showWeatherModal with Time:", formattedTime);
+        
+            showWeatherModal(weatherMessage, formattedTime);
+        }
+        
         
         // Normal mode: fetch weather alert from wind_alert.php
         fetch('weather/wind_alert.php')
@@ -118,9 +148,11 @@ document.addEventListener('DOMContentLoaded', function () {
 function showAnnouncementModal(message) {
     var modal = document.getElementById("announcementModal");
     var modalText = document.getElementById("modalAnnouncementText");
-    modalText.textContent = message;
+    modalText.innerHTML = message; // innerHTML renders <br> as line breaks
     modal.style.display = "block";
 }
+
+
   
 function hideAnnouncementModal() {
     var modal = document.getElementById("announcementModal");
@@ -159,10 +191,26 @@ document.addEventListener("DOMContentLoaded", function() {
 function showWeatherModal(message) {
     var modal = document.getElementById("weatherModal");
     var modalText = document.getElementById("modalWeatherText");
+    var modalTime = document.getElementById("modalWeatherTime");
 
+    if (!modal || !modalText || !modalTime) return;
+
+    // Get the current time at the moment the modal opens
+    let now = new Date();
+    let formattedTime = now.toLocaleTimeString("en-US", { 
+        hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: true 
+    });
+
+    // Set time and message
+    modalTime.textContent = "🕒 " + formattedTime;
     modalText.innerHTML = message;
+
+    // Show the modal
     modal.style.display = "block";
 }
+
+
+
 
 
 function hideWeatherModal() {
