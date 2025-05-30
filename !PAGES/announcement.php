@@ -162,9 +162,11 @@ if (isset($_SESSION['user'])) {
                 <input type="datetime-local" id="announce_at" name="announce_at" class="announce-at">
             </div>
 
-            <button id="speak-button" type="button" class="speak-btn">Speak</button>
-            <br>
-            <button type="submit" class="submit-btn">Submit Announcement</button>
+<div style="display: flex; justify-content: space-between; width: 100%;">
+    <button id="speak-button" type="button" class="speak-btn">Speak</button>
+    <button type="submit" class="submit-btn">Submit Announcement</button>
+</div>
+
         </form>
     </div>
 </div>

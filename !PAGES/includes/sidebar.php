@@ -34,6 +34,12 @@ $userRole = isset($_SESSION['role']) ? $_SESSION['role'] : 'guest';
                 </a>
             </li>
             <li class="nav-item">
+                <a class="nav-link" href="javascript:void(0);" onclick="window.location.href='siren.php';">
+                    <i class="material-icons">record_voice_over</i>
+                    <span>Siren</span>
+                </a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" href="javascript:void(0);" onclick="window.location.href='history.php';">
                     <i class="material-icons">history</i>
                     <span>History</span>

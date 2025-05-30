@@ -59,3 +59,8 @@
   top: 10px;
   left: 15px;
 }
+
+.modal.siren-modal { display: none; position: fixed; z-index: 10000; }
+.small-modal.top-right { position: fixed; top: 20px; right: 20px; background: #fff; padding: 10px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.2); display: flex; align-items: center; }
+.modal-logo { width: 24px; height: 24px; margin-right: 8px; }
+

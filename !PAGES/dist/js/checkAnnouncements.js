@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function () {
     startAtExactMinute();
 
     // ===============================
-    // New: Weather Alert Functionality
+    // Weather Alert Functionality
     // ===============================
     // Set this flag to true to simulate weather alerts for testing.
     const testMode = false; //FALSE = NORMAL MODE, TRUE = TEST MODE
@@ -186,7 +186,7 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 // ===============================
-// New: Weather Modal Functions
+// Weather Modal Functions
 // ===============================
 function showWeatherModal(message) {
     var modal = document.getElementById("weatherModal");
@@ -209,7 +209,82 @@ function showWeatherModal(message) {
     modal.style.display = "block";
 }
 
+// ===============================
+// Sirens
+// ===============================
+document.addEventListener('DOMContentLoaded', () => {
+  function checkSirens() {
+  fetch('check-announcement.php?ts=' + new Date().getTime())
+    .then(res => res.json())
+    .then(data => {
+      if (data.sirens && data.sirens.length > 0) {
+        console.log(`🚨 Sirens Triggered: ${data.sirens.length}`);
+        data.sirens.forEach((siren, index) => {
+          console.log(`🔔 Siren #${index + 1} scheduled at: ${siren.siren_at}`);
+          triggerSirenModal();
+        });
+      } else {
+        console.log("✅ No sirens to trigger at this time.");
+      }
 
+      if (data.upcoming_sirens && data.upcoming_sirens.length > 0) {
+        console.log("📅 Upcoming Sirens:");
+        data.upcoming_sirens.forEach(siren => {
+          console.log(`   - ⏰ ${siren.siren_at}`);
+        });
+      } else {
+        console.log("📭 No upcoming sirens.");
+      }
+    })
+    .catch(error => console.error("⚠️ Error checking sirens:", error));
+  }
+
+
+  function triggerSirenModal() {
+    const modal = document.getElementById('sirenModal');
+    const audio = document.getElementById('sirenAudio');
+    const countdownEl = document.getElementById('countdownSeconds');
+    let seconds = 60;
+
+    console.log("🔊 Triggering siren modal and audio...");
+
+    modal.style.display = 'block';
+    audio.play();
+
+    const interval = setInterval(() => {
+      seconds--;
+      countdownEl.textContent = seconds;
+      if (seconds <= 0) {
+        clearInterval(interval);
+        audio.pause();
+        audio.currentTime = 0;
+        modal.style.display = 'none';
+        console.log("🛑 Siren ended and modal hidden.");
+      }
+    }, 1000);
+  }
+
+    const sosButton = document.getElementById("sosButton");
+  if (sosButton) {
+    sosButton.addEventListener("click", () => {
+      console.log("🆘 SOS button clicked!");
+      triggerSirenModal();
+    });
+  }
+
+  function startSirenAtExactMinute() {
+    const now = new Date();
+    const secondsUntilNextMinute = 60 - now.getSeconds();
+    console.log(`🕒 Syncing... Checking sirens in ${secondsUntilNextMinute} seconds`);
+
+    setTimeout(() => {
+      checkSirens(); // First check
+      setInterval(checkSirens, 60000); // Then every 1 min
+    }, secondsUntilNextMinute * 1000);
+  }
+
+  startSirenAtExactMinute();
+});
 
 
 
