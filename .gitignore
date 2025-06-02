@@ -1,6 +1,7 @@
 connection.php
 login.php
 PASys.sql
+/!PAGES/announcement.php
 /!PAGES/weather/config.php
 /!PAGES/weather/forecast_processor.php
 notes

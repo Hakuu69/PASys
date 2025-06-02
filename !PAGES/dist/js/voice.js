@@ -1,53 +1,75 @@
-let availableVoices = [];
+// =======================
+// Azure Speech TTS Setup
+// =======================
 
-// Function to populate the voice dropdown based on the selected language
+// Add your Azure Speech credentials here
+const speechKey = "1MvxDWJFFC9ZVkGCtU0yxuxT1nINUCQDF9yvx8MATu2Yycr3Ji8KJQQJ99BFACqBBLyXJ3w3AAAYACOGKZgg";
+const serviceRegion = "southeastasia"; // e.g., "southeastasia"
+
+// Minimal Azure voice list (expand as needed)
+const azureVoices = [
+  { name: "en-US-GuyNeural", lang: "en-US", display: "Guy (English US)" },
+  { name: "en-US-JennyNeural", lang: "en-US", display: "Jenny (English US)" },
+  { name: "en-US-AriaNeural", lang: "en-US", display: "Aria (English US)" },
+  { name: "en-US-AmberNeural", lang: "en-US", display: "Amber (English US)" },
+  { name: "en-US-AnaNeural", lang: "en-US", display: "Ana (English US)" },
+  { name: "en-US-AshleyNeural", lang: "en-US", display: "Ashley (English US)" },
+  { name: "en-US-BrandonNeural", lang: "en-US", display: "Brandon (English US)" },
+  { name: "en-US-ChristopherNeural", lang: "en-US", display: "Christopher (English US)" },
+  { name: "en-US-CoraNeural", lang: "en-US", display: "Cora (English US)" },
+  { name: "en-US-DavisNeural", lang: "en-US", display: "Davis (English US)" },
+  { name: "en-US-ElizabethNeural", lang: "en-US", display: "Elizabeth (English US)" },
+  { name: "en-US-EricNeural", lang: "en-US", display: "Eric (English US)" },
+  { name: "en-US-JacobNeural", lang: "en-US", display: "Jacob (English US)" },
+  { name: "en-US-MichelleNeural", lang: "en-US", display: "Michelle (English US)" },
+  { name: "en-US-MonicaNeural", lang: "en-US", display: "Monica (English US)" },
+  { name: "en-US-RogerNeural", lang: "en-US", display: "Roger (English US)" },
+  { name: "en-US-SteffanNeural", lang: "en-US", display: "Steffan (English US)" },
+  { name: "fil-PH-AngeloNeural", lang: "fil-PH", display: "Angelo (Filipino PH)" },
+  { name: "fil-PH-BlessicaNeural", lang: "fil-PH", display: "Blessica (Filipino PH)" },
+  // Add more voices as needed
+];
+
+// Populate the voice dropdown based on selected language
 function populateVoices() {
   const voiceSelect = document.getElementById('voice-select');
   const languageSelect = document.getElementById('language-select');
-  const selectedLanguage = languageSelect.value; // Get selected language
+  const selectedLanguage = languageSelect.value;
 
   if (!voiceSelect) {
     console.error("Voice select element not found.");
     return;
   }
 
-  availableVoices = window.speechSynthesis.getVoices();
-  // console.log("Loaded voices:", availableVoices); CONSOLE LOG FOR VOICES AVAILABILITY
-
   voiceSelect.innerHTML = ''; // Clear previous options
 
-  // Filter voices based on selected language.
+  // Filter Azure voices by language
   let filteredVoices;
   if (selectedLanguage === 'fil-PH' || selectedLanguage === 'ilo-PH') {
-    // If Iloko is selected, map it to Filipino (`fil-PH` or `tl-PH`)
-    filteredVoices = availableVoices.filter(voice =>
+    filteredVoices = azureVoices.filter(voice =>
       voice.lang.toLowerCase().startsWith('fil') ||
       voice.lang.toLowerCase().startsWith('tl')
     );
   } else {
-    filteredVoices = availableVoices.filter(voice =>
+    filteredVoices = azureVoices.filter(voice =>
       voice.lang.toLowerCase().startsWith(selectedLanguage.toLowerCase())
     );
   }
 
-  console.log("Filtered voices:", filteredVoices);
-
-  // If no voices are found for the selected language, warn the user.
   if (filteredVoices.length === 0) {
-    voiceSelect.innerHTML = '<option value="">No voices available for selected language</option>';
+    voiceSelect.innerHTML = '<option value="">No Azure voices available for selected language</option>';
     return;
   }
 
-  // Populate the dropdown with matching voices
   filteredVoices.forEach(voice => {
     const option = document.createElement('option');
     option.value = voice.name;
-    option.textContent = `${voice.name} (${voice.lang})${voice.default ? ' -- DEFAULT' : ''}`;
+    option.textContent = voice.display + ` (${voice.lang})`;
     voiceSelect.appendChild(option);
   });
 }
 
-// Function to speak the announcement message using the selected voice
+// Speak the announcement message using Azure Speech
 function speakMessage() {
   const announcementText = document.getElementById('announcement-text').value;
   if (!announcementText.trim()) {
@@ -56,74 +78,59 @@ function speakMessage() {
   }
 
   const voiceSelect = document.getElementById('voice-select');
-  const selectedVoiceName = voiceSelect.value;
-  const utterance = new SpeechSynthesisUtterance(announcementText);
+  const selectedVoiceName = voiceSelect.value || "en-US-JennyNeural";
 
-  const selectedVoice = availableVoices.find(voice => voice.name === selectedVoiceName);
-  if (selectedVoice) {
-    utterance.voice = selectedVoice;
-  } else {
-    console.warn("Selected voice not found, using default.");
+  if (!window.SpeechSDK) {
+    alert("Azure Speech SDK not loaded.");
+    return;
   }
 
-  window.speechSynthesis.speak(utterance);
+  const speechConfig = SpeechSDK.SpeechConfig.fromSubscription(speechKey, serviceRegion);
+  speechConfig.speechSynthesisVoiceName = selectedVoiceName;
+  const audioConfig = SpeechSDK.AudioConfig.fromDefaultSpeakerOutput();
+  const synthesizer = new SpeechSDK.SpeechSynthesizer(speechConfig, audioConfig);
+
+  synthesizer.speakTextAsync(
+    announcementText,
+    result => synthesizer.close(),
+    error => {
+      console.error(error);
+      synthesizer.close();
+    }
+  );
 }
 
 document.addEventListener('DOMContentLoaded', function() {
   const announcementForm = document.getElementById('announcementForm');
 
   if (announcementForm) {
-      announcementForm.addEventListener('submit', function(e) {
-          if (document.getElementById('announce-later') && document.getElementById('announce-later').checked) {
-              const announceAtInput = document.getElementById('announce_at');
+    announcementForm.addEventListener('submit', function(e) {
+      if (document.getElementById('announce-later') && document.getElementById('announce-later').checked) {
+        const announceAtInput = document.getElementById('announce_at');
 
-              if (announceAtInput && announceAtInput.value) {
-                  const selectedDate = new Date(announceAtInput.value);
-                  const now = new Date();
+        if (announceAtInput && announceAtInput.value) {
+          const selectedDate = new Date(announceAtInput.value);
+          const now = new Date();
 
-                  // Adjust JavaScript time to match server timezone
-                  now.setMinutes(now.getMinutes() + now.getTimezoneOffset()); 
-                  now.setHours(now.getHours() + 8); // Manila Timezone (UTC+8)
+          // Adjust JavaScript time to match server timezone
+          now.setMinutes(now.getMinutes() + now.getTimezoneOffset());
+          now.setHours(now.getHours() + 8); // Manila Timezone (UTC+8)
 
-                  const fiveMinutesLater = new Date(now.getTime() + 5 * 60000);
-                  
-                  console.log("Selected Date:", selectedDate.toISOString());
-                  console.log("Server Adjusted Time:", now.toISOString());
-                  console.log("Minimum Allowed Time:", fiveMinutesLater.toISOString());
+          const fiveMinutesLater = new Date(now.getTime() + 5 * 60000);
 
-                  if (selectedDate < fiveMinutesLater) {
-                      e.preventDefault();
-                      alert("Please select a time at least 5 minutes ahead.");
-                  }
-              } else {
-                  e.preventDefault();
-                  alert("Please select a date and time for the announcement.");
-              }
+          if (selectedDate < fiveMinutesLater) {
+            e.preventDefault();
+            alert("Please select a time at least 5 minutes ahead.");
           }
-      });
+        } else {
+          e.preventDefault();
+          alert("Please select a date and time for the announcement.");
+        }
+      }
+    });
   }
-});
 
-// Check if the browser supports the Web Speech API
-if ('speechSynthesis' in window) {
-  // When voices are loaded/changed, repopulate the list.
-  speechSynthesis.onvoiceschanged = populateVoices;
-
-  // Initial population attempt.
   populateVoices();
-
-  // Repopulate voices when language selection changes.
   document.getElementById('language-select').addEventListener('change', populateVoices);
-
-  // Add event listener for the speak button.
   document.getElementById('speak-button').addEventListener('click', speakMessage);
-
-  // ✅ Minimal Additional Block: Second Attempt After 2 Seconds
-  setTimeout(() => {
-    console.log("Second attempt to populate voices...");
-    populateVoices();
-  }, 1);
-
-} else {
-  console.error("Web Speech API is not supported in this browser.");
-}
+});

@@ -1,3 +1,5 @@
+<script src="https://aka.ms/csspeech/jsbrowserpackageraw"></script>
+
 <!-- Modal Markup for Announcements -->
 <div id="announcementModal" class="modal">
     <div class="modal-content">
@@ -21,7 +23,7 @@
 <div id="sirenModal" class="modal siren-modal">
   <div class="modal-content small-modal top-right">
     <img src="./../ext/img/siren-logo.png" alt="Siren" class="modal-logo">
-    <h4>MANUAL SIREN: </h4>
+    <h4>SCHEDULED SIREN: </h4>
     <p>Ending in: <span id="countdownSeconds">180</span> seconds</p>
     <audio id="sirenAudio" src="./../ext/sounds/siren.mp3" preload="auto" loop></audio>
   </div>
@@ -37,7 +39,7 @@
     <span id="manualCloseBtn" class="close-btn">&times;</span>
 
     <img src="./../ext/img/siren-logo.png" alt="Siren" class="modal-logo">
-    <h4>SCHEDULED SIREN:</h4>
+    <h4>MANUAL SIREN:</h4>
     <p>Ending in: <span id="manualcountdownSeconds">600</span> seconds</p>
     <audio id="manualsirenAudio" src="./../ext/sounds/siren.mp3" preload="auto" loop></audio>
   </div>

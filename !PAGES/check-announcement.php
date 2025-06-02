@@ -52,7 +52,7 @@ $upcomingStmt->close();
 // ——————————————
 
 // Fetch sirens that should fire NOW
-$sirenQuery = "SELECT * FROM sirens WHERE status = 'ongoing' AND siren_at = ?";
+$sirenQuery = "SELECT * FROM sirens WHERE status = 'ongoing' AND ABS(TIMESTAMPDIFF(SECOND, siren_at, ?)) <= 60";
 $sirenStmt = $conn->prepare($sirenQuery);
 $sirenStmt->bind_param("s", $currentTime);
 $sirenStmt->execute();
@@ -76,7 +76,7 @@ while ($row = mysqli_fetch_assoc($upcomingSirenResult)) {
 
 // Only mark sirens as completed if they actually fired
 if (!empty($sirens)) {
-    $completeSiren = "UPDATE sirens SET status = 'completed' WHERE siren_at = ? AND status = 'ongoing'";
+    $completeSiren = "UPDATE sirens SET status = 'completed' WHERE status = 'ongoing' AND ABS(TIMESTAMPDIFF(SECOND, siren_at, ?)) <= 60";
     $compStmt = $conn->prepare($completeSiren);
     $compStmt->bind_param("s", $currentTime);
     $compStmt->execute();
