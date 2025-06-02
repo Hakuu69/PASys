@@ -1,0 +1,238 @@
+/* Sidebar Styles */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0; /* Start visible on desktop */
+    width: 250px;
+    height: 100%;
+    background: rgb(81, 111, 168);
+    color: #fff;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+    overflow-y: auto;
+    border-radius: 0 20px 20px 0;
+    transition: left 0.3s ease; /* Smooth transition */
+    z-index: 1;      /* a high number so the sidebar is above other elements */
+   
+}
+
+.sidebar.open {
+    left: 0; /* Show sidebar */
+}
+
+/* Hide sidebar offscreen for mobile */
+.sidebar:not(.open) {
+    left: -250px; /* Hide sidebar when closed */
+}
+
+/* Sidebar Header */
+.sidebar-header {
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.close-icon {
+    cursor: pointer;
+    font-size: 20px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Navbar Brand Styles */
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: white;
+}
+
+.logo {
+    height: 40px;
+    margin-right: 10px;
+}
+
+.brand-name {
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+/* Divider Styles */
+.divider {
+    border: none;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.2);
+    margin: 10px 0;
+}
+
+/* Navbar Navigation Styles */
+.navbar-nav {
+    padding: 0;
+}
+
+.navbar-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-item {
+    margin: 0;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    text-decoration: none;
+    color: white;
+    transition: background-color 0.2s ease-in-out;
+    cursor: pointer;
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+.nav-link i {
+    margin-right: 10px;
+}
+
+/* Top Header Styles */
+.top-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background-color: rgb(81, 111, 168);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 0 10px;
+    z-index: 1001;
+}
+
+.navbar-left {
+    display: flex;
+    align-items: center;
+    padding-right: 20px;
+}
+
+.navbar-left a {
+    margin-left: 20px;
+    color: white;
+    font-size: 24px;
+    text-decoration: none;
+}
+
+.menu-btn {
+    font-size: 24px;
+    color: white;
+    cursor: pointer;
+}
+
+/* Main Content Styles */
+#main-content {
+    margin-left: 0; /* Default margin when sidebar is hidden */
+    margin-top: 30px; /* Space for top header */
+    padding: 15px;
+    padding-bottom: 70px; /* Extra space for the footer */
+    transition: margin-left 0.3s ease; /* Smooth transition for margin */
+}
+
+/* Footer Styles */
+.footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background-color: rgb(81, 111, 168);
+    display: none; /* Hide footer by default on desktop */
+    border-radius: 20px 20px 0px 0;
+    display: flex; /* Ensure footer uses flexbox */
+    justify-content: space-between; /* Use space-between for equal gaps */
+    align-items: center;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    padding: 0 20px; /* Add horizontal padding */
+    z-index: 2;      /* a high number so the sidebar is above other elements */
+}
+
+.footer-button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 10px 15px; /* Adjust padding for better spacing */
+    text-align: center; /* Center the icons */
+    position: relative; /* Position relative for the badge */
+}
+
+.footer-button .material-icons {
+    font-size: 24px;
+    color: white;
+}
+
+.footer-button:hover {
+    background-color: rgba(255, 255, 255, 0.1); /* Slightly brighter on hover */
+    border-radius: 10px; /* Round corners on hover */
+}
+
+/* Responsive Styles */
+@media (min-width: 768px) {
+    #main-content {
+        margin-left: 250px; /* Make room for the sidebar */
+    }
+
+    .footer {
+        display: none; /* Hide footer on desktop */
+    }
+
+    .top-header {
+        display: flex; /* Show header on desktop */
+    }
+}
+
+/* New styles for app and web environments */
+.app .top-header {
+    display: none; /* Hide header in app */
+}
+
+.app .footer {
+    display: flex; /* Show footer in app */
+}
+
+/* Hide account header and its items in app */
+.app .account-header,
+.app .nav-items {
+    display: none; /* Hides the account header and its items */
+}
+
+/* Notification Bell Logo (sidebar.php) */
+.notification-badge {
+    background-color: red;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 50%;
+    padding: 3px 6px;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    display: none; /* Hidden by default */
+}
+
+.notification-badge {
+    position: absolute;  
+    top: -5px;          /* Adjust to move the badge up/down */
+    right: -5px;        /* Adjust to move the badge left/right */
+    background-color: red;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 50%;
+    padding: 3px 6px;
+    display: none;      /* Hidden by default if count = 0 */
+    z-index: 3;      /* Ensures it appears above other elements */
+}
