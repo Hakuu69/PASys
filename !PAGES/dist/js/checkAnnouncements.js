@@ -65,23 +65,59 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(error => console.error("⚠️ Error checking announcements:", error));
     }
 
-    function speakMessage(message, voiceName) {
-        if ('speechSynthesis' in window) {
-            let utterance = new SpeechSynthesisUtterance(message);
-            let selectedVoice = availableVoices.find(voice => voice.name === voiceName);
+  function speakMessage(message, voiceName) {
+  if ('speechSynthesis' in window) {
+    // Create the initial audio object for the pre-announcement sound.
+    let preAnnouncementSound = new Audio('./../ext/sounds/announcementsfx.mp3');
 
-            if (selectedVoice) {
-                utterance.voice = selectedVoice;
-                console.log("✅ Using voice:", selectedVoice.name, "(", selectedVoice.lang, ")");
-            } else {
-                console.warn("⚠️ Selected voice not found, using default.");
-            }
-
-            speechSynthesis.speak(utterance);
+    // Function to handle repeating the voice announcement.
+    // repeatCount = 0 indicates the first TTS announcement.
+    function speakAndRepeat(repeatCount = 0) {
+      let utterance = new SpeechSynthesisUtterance(message);
+      let selectedVoice = availableVoices.find(voice => voice.name === voiceName);
+      if (selectedVoice) {
+        utterance.voice = selectedVoice;
+        console.log("✅ Using voice:", selectedVoice.name, "(", selectedVoice.lang, ")");
+      } else {
+        console.warn("⚠️ Selected voice not found, using default.");
+      }
+      // When the TTS utterance finishes...
+      utterance.onend = function() {
+        if (repeatCount < 2) { // This way, utterance is spoken 3 times in total (0, 1, 2)
+          speakAndRepeat(repeatCount + 1);
         } else {
-            console.warn("⚠️ Text-to-Speech not supported in this browser.");
+          // After finishing 3 TTS announcements, play the announcement sound again.
+          let postAnnouncementSound = new Audio('./../ext/sounds/announcementsfx.mp3');
+          postAnnouncementSound.play().catch(err => {
+            console.error("Error playing post-announcement sound:", err);
+          });
         }
+      };
+      speechSynthesis.speak(utterance);
     }
+
+    // Define the listener for when the pre-announcement sound ends.
+    function onPreSoundEnded() {
+      // Remove this listener so that the post-play of the sound does not trigger the TTS again.
+      preAnnouncementSound.removeEventListener('ended', onPreSoundEnded);
+      // Begin the TTS announcements.
+      speakAndRepeat();
+    }
+    preAnnouncementSound.addEventListener('ended', onPreSoundEnded);
+
+    // Start playing the pre-announcement sound.
+    preAnnouncementSound.play().catch(err => {
+      console.error("Error playing pre-announcement sound:", err);
+      // Fallback: If the sound fails to play, directly start the TTS announcements.
+      speakAndRepeat();
+    });
+    
+  } else {
+    console.warn("⚠️ Text-to-Speech not supported in this browser.");
+  }
+}
+
+
 
     function startAtExactMinute() {
         let now = new Date();

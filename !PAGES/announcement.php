@@ -57,53 +57,99 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($stmt) {
         mysqli_stmt_bind_param($stmt, "sssssssss", $firstName, $lastName, $contact, $role, $message_text, $language, $voice, $announce_at, $status);
         if (mysqli_stmt_execute($stmt)) {
-            if ($announce_type === 'now') {
-                // Prepare the raw message for TTS: replace literal \r\n, \r, and \n with a space.
-            $rawMessageTextForTTS = str_replace(array("\\r\\n", "\\r", "\\n"), " ", $message_text);
+        if ($announce_type === 'now') {
+        // Prepare the raw message for TTS: replace literal \r\n, \r, and \n with a space.
+        $rawMessageTextForTTS = str_replace(array("\\r\\n", "\\r", "\\n"), " ", $message_text);
+        // Prepare the formatted message for display: replace literal \r\n, \r, and \n with <br> tags.
+        $formattedMessageTextForModal = str_replace(array("\\r\\n", "\\r", "\\n"), "<br>", $message_text);
 
-            // Prepare the formatted message for display: replace literal \r\n, \r, and \n with <br> tags.
-            $formattedMessageTextForModal = str_replace(array("\\r\\n", "\\r", "\\n"), "<br>", $message_text);
-
-            echo '<script>
-            setTimeout(function(){
-                var rawMessageText = ' . json_encode($rawMessageTextForTTS) . ';
-                var formattedMessageText = ' . json_encode($formattedMessageTextForModal) . ';
-                var now = new Date();
-                var formattedTime = now.toLocaleTimeString("en-US", { 
-                    hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: true 
-                });
-                var utterance = new SpeechSynthesisUtterance(rawMessageText);
-                var voices = window.speechSynthesis.getVoices();
-                var selectedVoice = voices.find(function(voice) {
-                    return voice.name === ' . json_encode($voice) . ';
-                });
+        echo '<script>
+        // ----------------------------
+        // New speakMessage function:
+        // ----------------------------
+        function speakMessage(message, voiceName) {
+            if ("speechSynthesis" in window) {
+                // Create a new audio object for your announcement sound.
+                let preAnnouncementSound = new Audio("./../ext/sounds/announcementsfx.mp3");
         
-                if (selectedVoice) {
-                    utterance.voice = selectedVoice;
-                    console.log("✅ Using voice:", selectedVoice.name, "(", selectedVoice.lang, ")");
-                } else {
-                    console.warn("⚠️ Selected voice not found, using default.");
+                // Function to speak the message and repeat it.
+                function speakAndRepeat(repeatCount = 0) {
+                    let utterance = new SpeechSynthesisUtterance(message);
+                    let voices = window.speechSynthesis.getVoices();
+                    let selectedVoice = voices.find(function(v) {
+                        return v.name === voiceName;
+                    });
+                    if (selectedVoice) {
+                        utterance.voice = selectedVoice;
+                        console.log("✅ Using voice:", selectedVoice.name, "(", selectedVoice.lang, ")");
+                    } else {
+                        console.warn("⚠️ Selected voice not found, using default.");
+                    }
+                    utterance.onend = function() {
+                        // Repeat until we have spoken the message 3 times in total.
+                        if (repeatCount < 2) {
+                            speakAndRepeat(repeatCount + 1);
+                        } else {
+                            // After finishing 3 utterances, play the announcement sound again.
+                            let postAnnouncementSound = new Audio("./../ext/sounds/announcementsfx.mp3");
+                            postAnnouncementSound.play().catch(err => {
+                                console.error("Error playing post-announcement sound:", err);
+                            });
+                        }
+                    };
+                    window.speechSynthesis.speak(utterance);
                 }
         
-                window.speechSynthesis.speak(utterance);
-                window.announceNowRedirect = true;
+                // When the pre-announcement sound ends, start speaking.
+                function onPreSoundEnded() {
+                    preAnnouncementSound.removeEventListener("ended", onPreSoundEnded);
+                    speakAndRepeat();
+                }
+                preAnnouncementSound.addEventListener("ended", onPreSoundEnded);
         
-                // ✅ Call showAnnouncementModal with time
-                showAnnouncementModal(formattedMessageText, formattedTime);
-        
-                // ✅ Manually update the modal time in case the function fails
-                setTimeout(() => {
-                    let modalTimeElement = document.getElementById("modalAnnouncementTime");
-                    if (modalTimeElement) {
-                        modalTimeElement.textContent = "🕒 " + formattedTime;
-                        console.log("✅ Manually updated modal time: ", formattedTime);
-                    } else {
-                        console.error("🚨 Failed to update modal time, element not found!");
-                    }
-                }, 1);
-            }, 500);
-        </script>';
+                // Start playing the pre-announcement sound.
+                preAnnouncementSound.play().catch(err => {
+                    console.error("Error playing pre-announcement sound:", err);
+                    // Fall back: if the sound fails, directly start the TTS announcements.
+                    speakAndRepeat();
+                });
             } else {
+                console.warn("⚠️ Text-to-Speech not supported in this browser.");
+            }
+        }
+        
+        // ----------------------------
+        // Execute the announcement after a short delay.
+        // ----------------------------
+        setTimeout(function(){
+            var rawMessageText = ' . json_encode($rawMessageTextForTTS) . ';
+            var formattedMessageText = ' . json_encode($formattedMessageTextForModal) . ';
+            var now = new Date();
+            var formattedTime = now.toLocaleTimeString("en-US", { 
+                hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: true 
+            });
+        
+            // Call the new speakMessage function passing in the raw TTS text and the chosen voice.
+            speakMessage(rawMessageText, ' . json_encode($voice) . ');
+        
+            // Set a flag for redirection and display the announcement modal.
+            window.announceNowRedirect = true;
+            showAnnouncementModal(formattedMessageText, formattedTime);
+        
+            // Manually update the modal time in case the function fails.
+            setTimeout(function(){
+                var modalTimeElement = document.getElementById("modalAnnouncementTime");
+                if(modalTimeElement){
+                    modalTimeElement.textContent = "🕒 " + formattedTime;
+                    console.log("✅ Manually updated modal time: " + formattedTime);
+                } else {
+                    console.error("🚨 Failed to update modal time, element not found!");
+                }
+            }, 1);
+        }, 500);
+        </script>';
+        exit;
+    }else {
                 echo "<script>alert('Announcement scheduled successfully!'); window.location.href='announcement.php';</script>";
             }
             exit;
