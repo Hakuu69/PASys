@@ -244,7 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('sirenModal');
     const audio = document.getElementById('sirenAudio');
     const countdownEl = document.getElementById('countdownSeconds');
-    let seconds = 60;
+    let seconds = 180;
 
     console.log("🔊 Triggering siren modal and audio...");
 
@@ -264,11 +264,66 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 1000);
   }
 
-    const sosButton = document.getElementById("sosButton");
+    // Keep a reference to the interval so we can clear it on manual close
+  let manualInterval = null;
+
+  function manualTriggerSirenModal() {
+    const modal = document.getElementById('manualsirenModal');
+    const audio = document.getElementById('manualsirenAudio');
+    const countdownEl = document.getElementById('manualcountdownSeconds');
+    let seconds = 600;
+
+    console.log("🔊 Triggering manual siren modal and audio…");
+
+    modal.style.display = 'block';
+    audio.play().catch(err => console.warn('Audio play blocked:', err));
+
+    // Clear any previous interval (just in case)
+    if (manualInterval) clearInterval(manualInterval);
+
+    manualInterval = setInterval(() => {
+      seconds--;
+      countdownEl.textContent = seconds;
+      if (seconds <= 0) {
+        clearInterval(manualInterval);
+        audio.pause();
+        audio.currentTime = 0;
+        modal.style.display = 'none';
+        console.log("🛑 Manual siren ended and modal hidden.");
+      }
+    }, 1000);
+  }
+
+  // Click handler for SOS button
+  const sosButton = document.getElementById("sosButton");
   if (sosButton) {
     sosButton.addEventListener("click", () => {
       console.log("🆘 SOS button clicked!");
-      triggerSirenModal();
+      manualTriggerSirenModal();
+    });
+  }
+
+  // Click handler for the × close button
+  const manualCloseBtn = document.getElementById('manualCloseBtn');
+  if (manualCloseBtn) {
+    manualCloseBtn.addEventListener('click', () => {
+      const modal = document.getElementById('manualsirenModal');
+      const audio = document.getElementById('manualsirenAudio');
+
+      console.log("✖ Closing manual siren modal…");
+
+      // Clear countdown interval
+      if (manualInterval) {
+        clearInterval(manualInterval);
+        manualInterval = null;
+      }
+
+      // Stop & reset audio
+      audio.pause();
+      audio.currentTime = 0;
+
+      // Hide modal
+      modal.style.display = 'none';
     });
   }
 

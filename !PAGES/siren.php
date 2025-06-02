@@ -104,7 +104,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <legend>Select Time Slots:</legend>
                 <label><input type="checkbox" name="times[]" value="07:00"> 7:00 AM</label>
                 <label><input type="checkbox" name="times[]" value="12:00"> 12:00 PM</label>
-                <label><input type="checkbox" name="times[]" value="17:00"> 5:00 PM</label>
+                <label><input type="checkbox" name="times[]" value="18:00"> 6:00 PM</label>
             </fieldset>
             <button type="submit" class="submit-btn">Schedule Sirens</button>
         </form>
