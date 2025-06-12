@@ -74,56 +74,58 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Azure Speech SDK: Speak each sentence, wait for finish, no repeat
         function speakMessage(message, voiceName) {
-            let preAnnouncementSound = new Audio("./../ext/sounds/announcementsfx.mp3");
+        let preAnnouncementSound = new Audio("./../ext/sounds/announcementsfx.mp3");
 
-            // Split message into sentences (by . ! ? or line break)
-            let phrases = message.match(/[^.!?]+[.!?]?/g) || [message];
+        // Split message into sentences (by . ! ? or line break)
+        let phrases = (message.match(/[^.!?]+[.!?]?/g) || [message])
+            .map(p => p.trim())
+            .filter(p => p.length > 0);
 
-            function speakAllPhrases() {
-                let index = 0;
-                function speakNextPhrase() {
-                    if (index >= phrases.length) {
-                        // All phrases done, play the announcement sound again.
-                        return;
-                    }
-                    if (window.SpeechSDK) {
-                        const speechConfig = SpeechSDK.SpeechConfig.fromSubscription("1MvxDWJFFC9ZVkGCtU0yxuxT1nINUCQDF9yvx8MATu2Yycr3Ji8KJQQJ99BFACqBBLyXJ3w3AAAYACOGKZgg", "southeastasia");
-                        speechConfig.speechSynthesisVoiceName = voiceName;
-                        const audioConfig = SpeechSDK.AudioConfig.fromDefaultSpeakerOutput();
-                        const synthesizer = new SpeechSDK.SpeechSynthesizer(speechConfig, audioConfig);
+        function speakAllPhrases() {
+            let index = 0;
+            let synthesizer = null;
+            if (window.SpeechSDK) {
+                const speechConfig = SpeechSDK.SpeechConfig.fromSubscription("1MvxDWJFFC9ZVkGCtU0yxuxT1nINUCQDF9yvx8MATu2Yycr3Ji8KJQQJ99BFACqBBLyXJ3w3AAAYACOGKZgg", "southeastasia");
+                speechConfig.speechSynthesisVoiceName = voiceName;
+                const audioConfig = SpeechSDK.AudioConfig.fromDefaultSpeakerOutput();
+                synthesizer = new SpeechSDK.SpeechSynthesizer(speechConfig, audioConfig);
+            } else {
+                alert("Azure Speech SDK not loaded.");
+                return;
+            }
 
-                        synthesizer.speakTextAsync(
-                            phrases[index].trim(),
-                            function(result) {
-                                synthesizer.close();
-                                index++;
-                                setTimeout(speakNextPhrase, 250); // 0.25s pause between sentences
-                            },
-                            function(error) {
-                                console.error(error);
-                                synthesizer.close();
-                                index++;
-                                setTimeout(speakNextPhrase, 250);
-                            }
-                        );
-                    } else {
-                        alert("Azure Speech SDK not loaded.");
-                    }
+            function speakNextPhrase() {
+                if (index >= phrases.length) {
+                    synthesizer.close();
+                    return;
                 }
-                speakNextPhrase();
+                synthesizer.speakTextAsync(
+                    phrases[index],
+                    function(result) {
+                        index++;
+                        speakNextPhrase();
+                    },
+                    function(error) {
+                        console.error(error);
+                        index++;
+                        speakNextPhrase();
+                    }
+                );
             }
-
-            function onPreSoundEnded() {
-                preAnnouncementSound.removeEventListener("ended", onPreSoundEnded);
-                speakAllPhrases();
-            }
-            preAnnouncementSound.addEventListener("ended", onPreSoundEnded);
-
-            preAnnouncementSound.play().catch(err => {
-                console.error("Error playing pre-announcement sound:", err);
-                speakAllPhrases();
-            });
+            speakNextPhrase();
         }
+
+        function onPreSoundEnded() {
+            preAnnouncementSound.removeEventListener("ended", onPreSoundEnded);
+            speakAllPhrases();
+        }
+        preAnnouncementSound.addEventListener("ended", onPreSoundEnded);
+
+        preAnnouncementSound.play().catch(err => {
+            console.error("Error playing pre-announcement sound:", err);
+            speakAllPhrases();
+        });
+    }
 
         speakMessage(rawMessageText, ' . json_encode($voice) . ');
 

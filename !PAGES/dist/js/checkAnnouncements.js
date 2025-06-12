@@ -287,7 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('sirenModal');
     const audio = document.getElementById('sirenAudio');
     const countdownEl = document.getElementById('countdownSeconds');
-    let seconds = 180;
+    let seconds = 60;
 
     console.log("🔊 Triggering siren modal and audio...");
 

@@ -25,7 +25,7 @@
     <img src="./../ext/img/siren-logo.png" alt="Siren" class="modal-logo">
     <h4>SCHEDULED SIREN: </h4>
     <p>Ending in: <span id="countdownSeconds">180</span> seconds</p>
-    <audio id="sirenAudio" src="./../ext/sounds/siren.mp3" preload="auto" loop></audio>
+    <audio id="sirenAudio" src="./../ext/sounds/sirenscheduled.mp3" preload="auto" loop></audio>
   </div>
 </div>
 

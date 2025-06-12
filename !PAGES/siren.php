@@ -102,7 +102,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </fieldset>
             <fieldset class="form-group">
                 <legend>Select Time Slots:</legend>
-                <label><input type="checkbox" name="times[]" value="07:00"> 7:00 AM</label>
+                <label><input type="checkbox" name="times[]" value="06:00"> 6:00 AM</label>
                 <label><input type="checkbox" name="times[]" value="12:00"> 12:00 PM</label>
                 <label><input type="checkbox" name="times[]" value="18:00"> 6:00 PM</label>
             </fieldset>
