@@ -85,7 +85,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             let index = 0;
             let synthesizer = null;
             if (window.SpeechSDK) {
-                const speechConfig = SpeechSDK.SpeechConfig.fromSubscription("1MvxDWJFFC9ZVkGCtU0yxuxT1nINUCQDF9yvx8MATu2Yycr3Ji8KJQQJ99BFACqBBLyXJ3w3AAAYACOGKZgg", "southeastasia");
+                const speechConfig = SpeechSDK.SpeechConfig.fromSubscription("CMo1vqlBhtRiHVg4g6xWcBPQUQCkxWeIfTz262a0jtEb6Ifz6bNQJQQJ99BGACqBBLyXJ3w3AAAYACOGZ5jX", "southeastasia");
                 speechConfig.speechSynthesisVoiceName = voiceName;
                 const audioConfig = SpeechSDK.AudioConfig.fromDefaultSpeakerOutput();
                 synthesizer = new SpeechSDK.SpeechSynthesizer(speechConfig, audioConfig);

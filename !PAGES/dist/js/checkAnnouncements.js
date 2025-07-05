@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function speakMessage(message, voiceName) {
   // Azure Speech SDK credentials
-  const speechKey = "1MvxDWJFFC9ZVkGCtU0yxuxT1nINUCQDF9yvx8MATu2Yycr3Ji8KJQQJ99BFACqBBLyXJ3w3AAAYACOGKZgg";
+  const speechKey = "CMo1vqlBhtRiHVg4g6xWcBPQUQCkxWeIfTz262a0jtEb6Ifz6bNQJQQJ99BGACqBBLyXJ3w3AAAYACOGZ5jX";
   const serviceRegion = "southeastasia";
 
   // Use Azure Speech SDK if available
@@ -253,36 +253,42 @@ function showWeatherModal(message) {
 }
 
 // ===============================
-// Sirens
+// Sirens (PER SECOND CHECK)
 // ===============================
 document.addEventListener('DOMContentLoaded', () => {
-  function checkSirens() {
-  fetch('check-announcement.php?ts=' + new Date().getTime())
-    .then(res => res.json())
-    .then(data => {
-      if (data.sirens && data.sirens.length > 0) {
-        console.log(`🚨 Sirens Triggered: ${data.sirens.length}`);
-        data.sirens.forEach((siren, index) => {
-          console.log(`🔔 Siren #${index + 1} scheduled at: ${siren.siren_at}`);
-          triggerSirenModal();
-        });
-      } else {
-        console.log("✅ No sirens to trigger at this time.");
-      }
+  let sirenCountdownInterval = null;
+  let manualInterval = null;
 
-      if (data.upcoming_sirens && data.upcoming_sirens.length > 0) {
-        console.log("📅 Upcoming Sirens:");
-        data.upcoming_sirens.forEach(siren => {
-          console.log(`   - ⏰ ${siren.siren_at}`);
-        });
-      } else {
-        console.log("📭 No upcoming sirens.");
-      }
-    })
-    .catch(error => console.error("⚠️ Error checking sirens:", error));
+  // Poll for scheduled sirens every second
+  function checkSirens() {
+    fetch('check-announcement.php?ts=' + new Date().getTime())
+      .then(res => res.json())
+      .then(data => {
+        console.log("🕒 Siren Check Time:", data.currentTime);
+
+        if (data.sirens && data.sirens.length > 0) {
+          console.log(`🚨 Sirens Triggered: ${data.sirens.length}`);
+          data.sirens.forEach((siren, index) => {
+            console.log(`🔔 Siren #${index + 1} scheduled at: ${siren.siren_at}`);
+            triggerSirenModal();
+          });
+        } else {
+          console.log("✅ No sirens to trigger at this time.");
+        }
+
+        if (data.upcoming_sirens && data.upcoming_sirens.length > 0) {
+          console.log("📅 Upcoming Sirens:");
+          data.upcoming_sirens.forEach(siren => {
+            console.log(`   - ⏰ ${siren.siren_at}`);
+          });
+        } else {
+          console.log("📭 No upcoming sirens.");
+        }
+      })
+      .catch(error => console.error("⚠️ Error checking sirens:", error));
   }
 
-
+  // Show the siren modal and play audio for 60 seconds
   function triggerSirenModal() {
     const modal = document.getElementById('sirenModal');
     const audio = document.getElementById('sirenAudio');
@@ -292,13 +298,16 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log("🔊 Triggering siren modal and audio...");
 
     modal.style.display = 'block';
-    audio.play();
+    audio.play().catch(err => console.warn('Audio play blocked:', err));
 
-    const interval = setInterval(() => {
+    // Clear any previous interval
+    if (sirenCountdownInterval) clearInterval(sirenCountdownInterval);
+
+    sirenCountdownInterval = setInterval(() => {
       seconds--;
-      countdownEl.textContent = seconds;
+      if (countdownEl) countdownEl.textContent = seconds;
       if (seconds <= 0) {
-        clearInterval(interval);
+        clearInterval(sirenCountdownInterval);
         audio.pause();
         audio.currentTime = 0;
         modal.style.display = 'none';
@@ -307,9 +316,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 1000);
   }
 
-    // Keep a reference to the interval so we can clear it on manual close
-  let manualInterval = null;
-
+  // Manual/SOS Siren Modal (10 minutes)
   function manualTriggerSirenModal() {
     const modal = document.getElementById('manualsirenModal');
     const audio = document.getElementById('manualsirenAudio');
@@ -321,12 +328,12 @@ document.addEventListener('DOMContentLoaded', () => {
     modal.style.display = 'block';
     audio.play().catch(err => console.warn('Audio play blocked:', err));
 
-    // Clear any previous interval (just in case)
+    // Clear any previous interval
     if (manualInterval) clearInterval(manualInterval);
 
     manualInterval = setInterval(() => {
       seconds--;
-      countdownEl.textContent = seconds;
+      if (countdownEl) countdownEl.textContent = seconds;
       if (seconds <= 0) {
         clearInterval(manualInterval);
         audio.pause();
@@ -337,7 +344,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 1000);
   }
 
-  // Click handler for SOS button
+  // SOS Button handler
   const sosButton = document.getElementById("sosButton");
   if (sosButton) {
     sosButton.addEventListener("click", () => {
@@ -346,7 +353,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Click handler for the × close button
+  // Manual siren close button handler
   const manualCloseBtn = document.getElementById('manualCloseBtn');
   if (manualCloseBtn) {
     manualCloseBtn.addEventListener('click', () => {
@@ -355,33 +362,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
       console.log("✖ Closing manual siren modal…");
 
-      // Clear countdown interval
       if (manualInterval) {
         clearInterval(manualInterval);
         manualInterval = null;
       }
 
-      // Stop & reset audio
       audio.pause();
       audio.currentTime = 0;
-
-      // Hide modal
       modal.style.display = 'none';
     });
   }
 
-  function startSirenAtExactMinute() {
-    const now = new Date();
-    const secondsUntilNextMinute = 60 - now.getSeconds();
-    console.log(`🕒 Syncing... Checking sirens in ${secondsUntilNextMinute} seconds`);
-
-    setTimeout(() => {
-      checkSirens(); // First check
-      setInterval(checkSirens, 60000); // Then every 1 min
-    }, secondsUntilNextMinute * 1000);
-  }
-
-  startSirenAtExactMinute();
+  // Start polling every second
+  setInterval(checkSirens, 1000);
+  checkSirens(); // Initial check on page load
 });
 
 
